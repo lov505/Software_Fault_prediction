@@ -44,3 +44,21 @@ sigf=np.array(sigf)
 suncf.append(sigf)
 p1=np.zeros((sigf.shape[1]))
 print(sigf)
+
+
+for i in range(0,sigf.shape[1]):
+    logit_model=sm.Logit(bugs,df[:,sigf[0,i]])
+    result=logit_model.fit()
+    p1[i]=result.pvalues   
+sigfn=np.array(np.where(p1<=0.05))
+suncf.append(sigf[0,sigfn[0,:]])
+corr=np.zeros((sigfn.shape[1],sigfn.shape[1]))
+for i in range(0,sigfn.shape[1]):
+    for j in range(0,sigfn.shape[1]):
+        a=np.corrcoef(df[:,sigf[0,sigfn[0,i]]],df[:,sigf[0,sigfn[0,j]]])
+        corr[i,j]=a[0,1]    
+sg=crosscorr(corr,sigfn.shape[1])
+sg=np.where(sg>0)
+sg=np.array(sg)
+suncf.append(sigf[0,sigfn[0,sg[:]]])
+print(np.array(suncf[1]))
